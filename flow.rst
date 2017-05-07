@@ -93,7 +93,7 @@ glance and flavor calls intermixed later because it's still doing this)::
   May 05 14:12:53 os4 glance-api[21956]: DEBUG glance.api.middleware.version_negotiation [req-5f7dac4a-c8ef-4c3e-b650-51e78302aa04 demo demo] Matched version: v2 {{(pid=22135) process_request /opt/stack/glance/glance/api/middleware/version_negotiation.py:69}}
   May 05 14:12:53 os4 glance-api[21956]: DEBUG glance.api.middleware.version_negotiation [req-5f7dac4a-c8ef-4c3e-b650-51e78302aa04 demo demo] new path /v2/images/efc96458-7cd4-43e3-9a35-93001e98fd1a {{(pid=22135) process_request /opt/stack/glance/glance/api/middleware/version_negotiation.py:70}}
 
-nova-api has passed control to conductor / scheduler to look for host::
+nova-api has passed control to conductor / scheduler to pick a host::
 
   May 05 14:12:53 os4 nova-scheduler[31143]: DEBUG nova.scheduler.host_manager [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Getting compute nodes and services for cell 00000000-0000-0000-0000-000000000000(cell0) {{(pid=31143) _get_computes_for_cells /opt/stack/nova/nova/scheduler/host_manager.py:605}}
   May 05 14:12:53 os4 nova-scheduler[31143]: DEBUG oslo_db.sqlalchemy.engines [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] MySQL server mode set to STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION {{(pid=31143) _check_effective_sql_mode /usr/local/lib/python2.7/dist-packages/oslo_db/sqlalchemy/engines.py:260}}
@@ -129,6 +129,9 @@ Nova scheduler found one valid host and is starting to filter on it::
   May 05 14:12:53 os4 nova-scheduler[31143]: DEBUG oslo_concurrency.lockutils [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Lock "(u'os4', u'os4')" acquired by "nova.scheduler.host_manager._locked" :: waited 0.000s {{(pid=31143) inner /usr/local/lib/python2.7/dist-packages/oslo_concurrency/lockutils.py:270}}
   May 05 14:12:53 os4 nova-scheduler[31143]: DEBUG nova.virt.hardware [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Require both a host and instance NUMA topology to fit instance on host. {{(pid=31143) numa_fit_instance_to_host /opt/stack/nova/nova/virt/hardware.py:1466}}
   May 05 14:12:53 os4 nova-scheduler[31143]: DEBUG oslo_concurrency.lockutils [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Lock "(u'os4', u'os4')" released by "nova.scheduler.host_manager._locked" :: held 0.002s {{(pid=31143) inner /usr/local/lib/python2.7/dist-packages/oslo_concurrency/lockutils.py:282}}
+
+End of openstack client doing a show on the server and flavor::
+
   May 05 14:12:53 os4 nova-api[23142]: INFO nova.osapi_compute.wsgi.server [req-58e69592-1b87-491a-a6f3-3d5ecc12da68 demo demo] 10.42.0.53 "GET /v2.1/flavors/2 HTTP/1.1" status: 200 len: 690 time: 0.0438941
   May 05 14:12:54 os4 nova-conductor[30057]: DEBUG oslo_db.sqlalchemy.engines [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] MySQL server mode set to STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION {{(pid=32501) _check_effective_sql_mode /usr/local/lib/python2.7/dist-packages/oslo_db/sqlalchemy/engines.py:260}}
   May 05 14:12:54 os4 nova-conductor[30057]: DEBUG oslo_db.sqlalchemy.engines [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] MySQL server mode set to STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION {{(pid=32501) _check_effective_sql_mode /usr/local/lib/python2.7/dist-packages/oslo_db/sqlalchemy/engines.py:260}}
@@ -137,14 +140,14 @@ Conductor creates block device mapping and tells nova-compute to start
 the boot::
 
   May 05 14:12:54 os4 nova-conductor[30057]: DEBUG nova.conductor.manager [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] [instance: 339dc23b-d7bd-4856-b17f-ae5b19ca12eb] block_device_mapping [BlockDeviceMapping(attachment_id=<?>,boot_index=0,connection_info=None,created_at=<?>,delete_on_termination=True,deleted=<?>,deleted_at=<?>,destination_type='local',device_name=None,device_type='disk',disk_bus=None,guest_format=None,id=<?>,image_id='efc96458-7cd4-43e3-9a35-93001e98fd1a',instance=<?>,instance_uuid=<?>,no_device=False,snapshot_id=None,source_type='image',tag=None,updated_at=<?>,volume_id=None,volume_size=None)] {{(pid=32501) _create_block_device_mapping /opt/stack/nova/nova/conductor/manager.py:841}}
-  May 05 14:12:54 os4 nova-compute[811]: DEBUG oslo_concurrency.lockutils [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Lock "339dc23b-d7bd-4856-b17f-ae5b19ca12eb" acquired by "nova.compute.manager._locked_do_build_and_run_instance" :: waited 0.000s {{(pid=811) inner /usr/local/lib/python2.7/dist-packages/oslo_concurrency/lockutils.py:270}}
 
 Boot started on nova-compute::
 
+  May 05 14:12:54 os4 nova-compute[811]: DEBUG oslo_concurrency.lockutils [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Lock "339dc23b-d7bd-4856-b17f-ae5b19ca12eb" acquired by "nova.compute.manager._locked_do_build_and_run_instance" :: waited 0.000s {{(pid=811) inner /usr/local/lib/python2.7/dist-packages/oslo_concurrency/lockutils.py:270}}
   May 05 14:12:54 os4 nova-compute[811]: DEBUG nova.compute.manager [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] [instance: 339dc23b-d7bd-4856-b17f-ae5b19ca12eb] Starting instance... {{(pid=811) _do_build_and_run_instance /opt/stack/nova/nova/compute/manager.py:1747}}
   May 05 14:12:54 os4 nova-compute[811]: DEBUG nova.notifications.objects.base [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Defaulting the value of the field 'projects' to None in FlavorPayload due to 'Cannot call _load_projects on orphaned Flavor object' {{(pid=811) populate_schema /opt/stack/nova/nova/notifications/objects/base.py:119}}
 
-nova-compute actually allocates claim::
+nova-compute resource tracker claims the required resources::
 
   May 05 14:12:54 os4 nova-compute[811]: DEBUG oslo_concurrency.lockutils [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Lock "compute_resources" acquired by "nova.compute.resource_tracker.instance_claim" :: waited 0.000s {{(pid=811) inner /usr/local/lib/python2.7/dist-packages/oslo_concurrency/lockutils.py:270}}
   May 05 14:12:54 os4 nova-compute[811]: DEBUG nova.compute.resource_tracker [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Memory overhead for 2048 MB instance; 0 MB {{(pid=811) instance_claim /opt/stack/nova/nova/compute/resource_tracker.py:148}}
@@ -160,7 +163,7 @@ nova-compute actually allocates claim::
   May 05 14:12:54 os4 nova-compute[811]: DEBUG nova.virt.hardware [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Require both a host and instance NUMA topology to fit instance on host. {{(pid=811) numa_fit_instance_to_host /opt/stack/nova/nova/virt/hardware.py:1466}}
   May 05 14:12:54 os4 nova-compute[811]: INFO nova.compute.claims [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] [instance: 339dc23b-d7bd-4856-b17f-ae5b19ca12eb] Claim successful on node os4
 
-nova-compute tells scheduler this is allocated::
+nova-compute tells scheduler and placement what it allocated::
 
   May 05 14:12:54 os4 nova-compute[811]: DEBUG nova.scheduler.client.report [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] [instance: 339dc23b-d7bd-4856-b17f-ae5b19ca12eb] Sending allocation for instance {'MEMORY_MB': 2048, 'VCPU': 1, 'DISK_GB': 20} {{(pid=811) _allocate_for_instance /opt/stack/nova/nova/scheduler/client/report.py:844}}
   May 05 14:12:54 os4 nova-compute[811]: INFO nova.scheduler.client.report [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] [instance: 339dc23b-d7bd-4856-b17f-ae5b19ca12eb] Submitted allocation for instance
@@ -168,17 +171,13 @@ nova-compute tells scheduler this is allocated::
   May 05 14:12:54 os4 nova-compute[811]: DEBUG nova.scheduler.client.report [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Updating our resource provider generation from 2 to 3 {{(pid=811) _get_inventory_and_update_provider_generation /opt/stack/nova/nova/scheduler/client/report.py:481}}
   May 05 14:12:54 os4 nova-compute[811]: DEBUG oslo_concurrency.lockutils [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Lock "compute_resources" released by "nova.compute.resource_tracker.instance_claim" :: held 0.257s {{(pid=811) inner /usr/local/lib/python2.7/dist-packages/oslo_concurrency/lockutils.py:282}}
 
-nova-compute starts to create the network::
+nova-compute calls to neutron to allocate network resources::
 
   May 05 14:12:54 os4 nova-compute[811]: DEBUG nova.compute.manager [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] [instance: 339dc23b-d7bd-4856-b17f-ae5b19ca12eb] Start building networks asynchronously for instance. {{(pid=811) _build_resources /opt/stack/nova/nova/compute/manager.py:2062}}
   May 05 14:12:54 os4 nova-compute[811]: DEBUG oslo_concurrency.lockutils [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Lock "compute_resources" acquired by "nova.compute.resource_tracker.update_usage" :: waited 0.000s {{(pid=811) inner /usr/local/lib/python2.7/dist-packages/oslo_concurrency/lockutils.py:270}}
   May 05 14:12:54 os4 nova-compute[811]: DEBUG nova.scheduler.client.report [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Refreshing aggregate associations for resource provider 000a7316-841e-4fad-bc72-e3fe4d0efc03 {{(pid=811) _ensure_resource_provider /opt/stack/nova/nova/scheduler/client/report.py:438}}
   May 05 14:12:54 os4 nova-compute[811]: DEBUG oslo_concurrency.lockutils [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Lock "compute_resources" released by "nova.compute.resource_tracker.update_usage" :: held 0.086s {{(pid=811) inner /usr/local/lib/python2.7/dist-packages/oslo_concurrency/lockutils.py:282}}
   May 05 14:12:54 os4 nova-compute[811]: DEBUG nova.compute.manager [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] [instance: 339dc23b-d7bd-4856-b17f-ae5b19ca12eb] Allocating IP information in the background. {{(pid=811) _allocate_network_async /opt/stack/nova/nova/compute/manager.py:1384}}
-
-nova-compute calls neutron api server to allocate the required network
-(this is an async call, returns almost immediately)::
-
   May 05 14:12:54 os4 nova-compute[811]: DEBUG nova.network.neutronv2.api [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] [instance: 339dc23b-d7bd-4856-b17f-ae5b19ca12eb] allocate_for_instance() {{(pid=811) allocate_for_instance /opt/stack/nova/nova/network/neutronv2/api.py:828}}
   May 05 14:12:54 os4 nova-compute[811]: DEBUG nova.block_device [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] block_device_list [] {{(pid=811) volume_in_mapping /opt/stack/nova/nova/block_device.py:585}}
   May 05 14:12:54 os4 nova-compute[811]: DEBUG nova.compute.manager [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] [instance: 339dc23b-d7bd-4856-b17f-ae5b19ca12eb] Start building block device mappings for instance. {{(pid=811) _build_resources /opt/stack/nova/nova/compute/manager.py:2088}}
@@ -196,7 +195,7 @@ nova-compute actually triggers virt driver create::
   May 05 14:12:54 os4 nova-compute[811]: DEBUG nova.compute.manager [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] [instance: 339dc23b-d7bd-4856-b17f-ae5b19ca12eb] Start spawning the instance on the hypervisor. {{(pid=811) _build_and_run_instance /opt/stack/nova/nova/compute/manager.py:1921}}
   May 05 14:12:54 os4 nova-compute[811]: DEBUG nova.block_device [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] block_device_list [] {{(pid=811) volume_in_mapping /opt/stack/nova/nova/block_device.py:585}}
 
-nova-compute calls out to glance to pull the image::
+nova-compute virt driver calls out to glance to pull the image::
 
   May 05 14:12:54 os4 nova-compute[811]: INFO nova.virt.libvirt.driver [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] [instance: 339dc23b-d7bd-4856-b17f-ae5b19ca12eb] Creating image
   May 05 14:12:54 os4 nova-compute[811]: DEBUG oslo_concurrency.lockutils [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Lock "/opt/stack/data/nova/instances/339dc23b-d7bd-4856-b17f-ae5b19ca12eb/disk.info" acquired by "nova.virt.libvirt.imagebackend.write_to_disk_info_file" :: waited 0.000s {{(pid=811) inner /usr/local/lib/python2.7/dist-packages/oslo_concurrency/lockutils.py:270}}
@@ -264,7 +263,7 @@ build hypervisor boot command::
 
   May 05 14:12:56 os4 nova-compute[811]: DEBUG oslo_concurrency.processutils [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Running cmd (subprocess): /usr/bin/python -m oslo_concurrency.prlimit --as=1073741824 --cpu=8 -- env LC_ALL=C LANG=C qemu-img info /opt/stack/data/nova/instances/_base/71e3784636393bd59c86544533ba3cf90216a389.part {{(pid=811) execute /usr/local/lib/python2.7/dist-packages/oslo_concurrency/processutils.py:355}}
 
-nova-compute calls create port (again?)::
+Port creation is finished in neutron::
 
   May 05 14:12:56 os4 neutron-server[24158]: DEBUG neutron.quota.resource [req-8b4ccea7-1462-43cc-9a21-f0013b797999 demo demo] Persisted dirty status for tenant:34e6ec64968a454993eda1a2051483bd on resource:port {{(pid=24305) mark_dirty /opt/stack/neutron/neutron/quota/resource.py:193}}
   May 05 14:12:56 os4 neutron-server[24158]: INFO neutron.wsgi [req-8b4ccea7-1462-43cc-9a21-f0013b797999 demo demo] 10.42.0.53 "POST /v2.0/ports.json HTTP/1.1" status: 201  len: 1036 time: 2.0031881
@@ -290,13 +289,13 @@ nova-compute calls create port (again?)::
   {{(pid=24305) inner
   /usr/local/lib/python2.7/dist-packages/oslo_concurrency/lockutils.py:282}}
 
-Convert image from qcow2 to raw::
+In the nova-compute virt driver we start to convert the image from qcow2 to raw::
 
   May 05 14:12:56 os4 nova-compute[811]: DEBUG oslo_concurrency.processutils [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] CMD "/usr/bin/python -m oslo_concurrency.prlimit --as=1073741824 --cpu=8 -- env LC_ALL=C LANG=C qemu-img info /opt/stack/data/nova/instances/_base/71e3784636393bd59c86544533ba3cf90216a389.part" returned: 0 in 0.073s {{(pid=811) execute /usr/local/lib/python2.7/dist-packages/oslo_concurrency/processutils.py:385}}
   May 05 14:12:56 os4 nova-compute[811]: DEBUG nova.virt.images [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] efc96458-7cd4-43e3-9a35-93001e98fd1a was qcow2, converting to raw {{(pid=811) fetch_to_raw /opt/stack/nova/nova/virt/images.py:146}}
   May 05 14:12:56 os4 nova-compute[811]: DEBUG oslo_concurrency.processutils [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Running cmd (subprocess): qemu-img convert -O raw -f qcow2 /opt/stack/data/nova/instances/_base/71e3784636393bd59c86544533ba3cf90216a389.part /opt/stack/data/nova/instances/_base/71e3784636393bd59c86544533ba3cf90216a389.converted {{(pid=811) execute /usr/local/lib/python2.7/dist-packages/oslo_concurrency/processutils.py:355}}
 
-More neutron.... ??::
+Neutron port is bound to our host::
 
   May 05 14:12:56 os4 neutron-server[24158]: DEBUG neutron.wsgi [req-a75a4ec8-e81f-48e1-9569-a8fb90809f3f demo demo] http://10.42.0.53:9696/v2.0/extensions.json returned with HTTP 200 {{(pid=24305) __call__ /opt/stack/neutron/neutron/wsgi.py:715}}
   May 05 14:12:56 os4 neutron-server[24158]: INFO neutron.wsgi [req-a75a4ec8-e81f-48e1-9569-a8fb90809f3f demo demo] 10.42.0.53 "GET /v2.0/extensions.json HTTP/1.1" status: 200  len: 7503 time: 0.0548379
@@ -346,11 +345,11 @@ we download)::
   May 05 14:13:02 os4 nova-compute[811]: DEBUG oslo_concurrency.processutils [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] CMD "/usr/bin/python -m oslo_concurrency.prlimit --as=1073741824 --cpu=8 -- env LC_ALL=C LANG=C qemu-img info /opt/stack/data/nova/instances/339dc23b-d7bd-4856-b17f-ae5b19ca12eb/disk" returned: 0 in 0.043s {{(pid=811) execute /usr/local/lib/python2.7/dist-packages/oslo_concurrency/processutils.py:385}}
   May 05 14:13:02 os4 nova-compute[811]: DEBUG nova.virt.disk.api [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Cannot resize image /opt/stack/data/nova/instances/339dc23b-d7bd-4856-b17f-ae5b19ca12eb/disk to a smaller size. {{(pid=811) can_resize_image /opt/stack/nova/nova/virt/disk/api.py:220}}
 
-nova-compute allocate the console for the instance::
+nova-compute libvirt driver pre-creates the console for the instance so libvirt doesn't (else we can't read it)::
 
   May 05 14:13:02 os4 nova-compute[811]: DEBUG nova.virt.libvirt.driver [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] [instance: 339dc23b-d7bd-4856-b17f-ae5b19ca12eb] Ensure instance console log exists: /opt/stack/data/nova/instances/339dc23b-d7bd-4856-b17f-ae5b19ca12eb/console.log {{(pid=811) _ensure_console_log_for_instance /opt/stack/nova/nova/virt/libvirt/driver.py:2963}}
 
-nova-compute builds libvirt xml to boot instance::
+nova-compute libvirt driver starts building libvirt config for the instance::
 
   May 05 14:13:02 os4 nova-compute[811]: DEBUG nova.virt.libvirt.driver [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] [instance: 339dc23b-d7bd-4856-b17f-ae5b19ca12eb] Start _get_guest_xml network_info=[{"profile": {}, "ovs_interfaceid": "08268814-29e2-4719-b417-8832395e5e3e", "preserve_on_delete": false, "network": {"bridge": "br-int", "subnets": [{"ips": [{"meta": {}, "version": 4, "type": "fixed", "floating_ips": [], "address": "10.0.0.13"}], "version": 4, "meta": {"dhcp_server": "10.0.0.2"}, "dns": [], "routes": [], "cidr": "10.0.0.0/26", "gateway": {"meta": {}, "version": 4, "type": "gateway", "address": "10.0.0.1"}}, {"ips": [{"meta": {}, "version": 6, "type": "fixed", "floating_ips": [], "address": "fdfe:8380:b8e:0:f816:3eff:fe77:5f94"}], "version": 6, "meta": {"ipv6_address_mode": "slaac", "dhcp_server": "fdfe:8380:b8e:0:f816:3eff:fee4:604"}, "dns": [], "routes": [], "cidr": "fdfe:8380:b8e::/64", "gateway": {"meta": {}, "version": 6, "type": "gateway", "address": "fdfe:8380:b8e::1"}}], "meta": {"injected": false, "tenant_id": "34e6ec64968a454993eda1a2051483bd", "mtu": 1450}, "id": "8356212e-f122-4dfc-9846-adecc23b4f34", "label": "private"}, "devname": "tap08268814-29", "vnic_type": "normal", "qbh_params": null, "meta": {}, "details": {"port_filter": true, "ovs_hybrid_plug": true}, "address": "fa:16:3e:77:5f:94", "active": false, "type": "ovs", "id": "08268814-29e2-4719-b417-8832395e5e3e", "qbg_params": null}] disk_info={'disk_bus': 'virtio', 'cdrom_bus': 'ide', 'mapping': {'disk': {'bus': 'virtio', 'boot_index': '1', 'type': 'disk', 'dev': u'vda'}, 'root': {'bus': 'virtio', 'boot_index': '1', 'type': 'disk', 'dev': u'vda'}}} image_meta=ImageMeta(checksum='9952833a08a5f5550e24b8c80bfb1c6a',container_format='bare',created_at=2017-05-05T18:10:16Z,direct_url=<?>,disk_format='raw',id=efc96458-7cd4-43e3-9a35-93001e98fd1a,min_disk=0,min_ram=0,name='u16',owner='7873b5dd5a014e0eb53b3a06cf71cd1e',properties=ImageMetaProps,protected=<?>,size=286720000,status='active',tags=<?>,updated_at=2017-05-05T18:10:17Z,virtual_size=<?>,visibility=<?>) rescue=Non
   May 05 14:13:02 os4 nova-compute[811]: DEBUG nova.virt.hardware [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Getting desirable topologies for flavor Flavor(created_at=2017-05-05T16:06:15Z,deleted=False,deleted_at=None,disabled=False,ephemeral_gb=0,extra_specs={},flavorid='2',id=7,is_public=True,memory_mb=2048,name='m1.small',projects=<?>,root_gb=20,rxtx_factor=1.0,swap=0,updated_at=None,vcpu_weight=0,vcpus=1) and image_meta ImageMeta(checksum='9952833a08a5f5550e24b8c80bfb1c6a',container_format='bare',created_at=2017-05-05T18:10:16Z,direct_url=<?>,disk_format='raw',id=efc96458-7cd4-43e3-9a35-93001e98fd1a,min_disk=0,min_ram=0,name='u16',owner='7873b5dd5a014e0eb53b3a06cf71cd1e',properties=ImageMetaProps,protected=<?>,size=286720000,status='active',tags=<?>,updated_at=2017-05-05T18:10:17Z,virtual_size=<?>,visibility=<?>), allow threads: True {{(pid=811) _get_desirable_cpu_topologies /opt/stack/nova/nova/virt/hardware.py:560}}
@@ -373,19 +372,33 @@ nova-compute builds virtual interface object with network info::
   May 05 14:13:02 os4 nova-compute[811]: DEBUG nova.objects.instance [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Lazy-loading 'pci_devices' on Instance uuid 339dc23b-d7bd-4856-b17f-ae5b19ca12eb {{(pid=811) obj_load_attr /opt/stack/nova/nova/objects/instance.py:1034}}
   May 05 14:13:02 os4 nova-compute[811]: DEBUG nova.virt.libvirt.driver [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] [instance: 339dc23b-d7bd-4856-b17f-ae5b19ca12eb] End _get_guest_xml xml=<domain type="kvm">
 
-Waiting for network allocation to show up::
+nova-compute libvirt driver registers an expected callback from neutron for when the network is up and ready to answer DHCP::
 
   May 05 14:13:02 os4 nova-compute[811]: DEBUG nova.compute.manager [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] [instance: 339dc23b-d7bd-4856-b17f-ae5b19ca12eb] Preparing to wait for external event network-vif-plugged-08268814-29e2-4719-b417-8832395e5e3e {{(pid=811) prepare_for_instance_event /opt/stack/nova/nova/compute/manager.py:326}}
   May 05 14:13:02 os4 nova-compute[811]: DEBUG oslo_concurrency.lockutils [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Lock "339dc23b-d7bd-4856-b17f-ae5b19ca12eb-events" acquired by "nova.compute.manager._create_or_get_event" :: waited 0.000s {{(pid=811) inner /usr/local/lib/python2.7/dist-packages/oslo_concurrency/lockutils.py:270}}
   May 05 14:13:02 os4 nova-compute[811]: DEBUG oslo_concurrency.lockutils [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Lock "339dc23b-d7bd-4856-b17f-ae5b19ca12eb-events" released by "nova.compute.manager._create_or_get_event" :: held 0.000s {{(pid=811) inner /usr/local/lib/python2.7/dist-packages/oslo_concurrency/lockutils.py:282}}
 
-Which was found, on to more networking::
+nova-compute libvirt driver starts the guest paused and makes the request to neutron to plug the network::
 
   May 05 14:13:02 os4 nova-compute[811]: DEBUG nova.virt.libvirt.vif [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] vif_type=ovs instance=Instance(access_ip_v4=None,access_ip_v6=None,architecture=None,auto_disk_config=False,availability_zone='nova',cell_name=None,cleaned=False,config_drive='',created_at=2017-05-05T18:12:53Z,default_ephemeral_device=None,default_swap_device=None,deleted=False,deleted_at=None,device_metadata=None,disable_terminate=False,display_description='ubuntu1',display_name='ubuntu1',ec2_ids=EC2Ids,ephemeral_gb=0,ephemeral_key_uuid=None,fault=<?>,flavor=Flavor(7),host='os4',hostname='ubuntu1',id=2,image_ref='efc96458-7cd4-43e3-9a35-93001e98fd1a',info_cache=InstanceInfoCache,instance_type_id=7,kernel_id='',key_data='ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDcfMqWOU0bPsFuIdnXHaxqjxSsTOf0IAeAySYUUDsM+8Qo2bmd4oDzcdSRBnaEt2oIbyA6OVlZ9Ir5PNV+rhhutqwx0mJiPmmbqcE8nsCqa8mxahCED0NpGTi3uTuJcj+IXsr6kDqxoWXfVq+awZv/vHaGQP+oLTIDM0cPVrT1gTCYknqMeyLUCeehSVeCQM39jdyMt/+7TR9OMCiPPsv0vc0WR8jNMYvBVsv+7qpfZG5LLG+QMl5Vfe5kKG0cIZwrYeYnrhEJ7E1AXgPjaa38MqlQxoM1vCTAMGvqETEbJQBLFD9O+xGWsqXkDFHH8zfT6lw2F8CZwvh3FkyU7J+p sdague@kosh',key_name='pub',keypairs=KeyPairList,launch_index=0,launched_at=None,launched_on='os4',locked=False,locked_by=None,memory_mb=2048,metadata={},migration_context=<?>,new_flavor=None,node='os4',numa_topology=None,old_flavor=None,os_type=None,pci_devices=PciDeviceList,pci_requests=InstancePCIRequests,power_state=0,progress=0,project_id='34e6ec64968a454993eda1a2051483bd',ramdisk_id='',reservation_id='r-ax2kld90',root_device_name='/dev/vda',root_gb=20,security_groups=SecurityGroupList,services=<?>,shutdown_terminate=False,system_metadata={boot_roles='anotherrole,Member',image_base_image_ref='efc96458-7cd4-43e3-9a35-93001e98fd1a',image_container_format='bare',image_disk_format='raw',image_min_disk='20',image_min_ram='0',network_allocated='True',owner_project_name='demo',owner_user_name='demo'},tags=<?>,task_state='spawning',terminated_at=None,updated_at=2017-05-05T18:12:55Z,user_data=None,user_id='7589bd4b8d2f46bea84bb5b5cbed9933',uuid=33
   May 05 14:13:02 os4 nova-compute[811]: DEBUG nova.network.os_vif_util [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Converting VIF {"profile": {}, "ovs_interfaceid": "08268814-29e2-4719-b417-8832395e5e3e", "preserve_on_delete": false, "network": {"bridge": "br-int", "subnets": [{"ips": [{"meta": {}, "version": 4, "type": "fixed", "floating_ips": [], "address": "10.0.0.13"}], "version": 4, "meta": {"dhcp_server": "10.0.0.2"}, "dns": [], "routes": [], "cidr": "10.0.0.0/26", "gateway": {"meta": {}, "version": 4, "type": "gateway", "address": "10.0.0.1"}}, {"ips": [{"meta": {}, "version": 6, "type": "fixed", "floating_ips": [], "address": "fdfe:8380:b8e:0:f816:3eff:fe77:5f94"}], "version": 6, "meta": {"ipv6_address_mode": "slaac", "dhcp_server": "fdfe:8380:b8e:0:f816:3eff:fee4:604"}, "dns": [], "routes": [], "cidr": "fdfe:8380:b8e::/64", "gateway": {"meta": {}, "version": 6, "type": "gateway", "address": "fdfe:8380:b8e::1"}}], "meta": {"injected": false, "tenant_id": "34e6ec64968a454993eda1a2051483bd", "mtu": 1450}, "id": "8356212e-f122-4dfc-9846-adecc23b4f34", "label": "private"}, "devname": "tap08268814-29", "vnic_type": "normal", "qbh_params": null, "meta": {}, "details": {"port_filter": true, "ovs_hybrid_plug": true}, "address": "fa:16:3e:77:5f:94", "active": false, "type": "ovs", "id": "08268814-29e2-4719-b417-8832395e5e3e", "qbg_params": null} {{(pid=811) nova_to_osvif_vif /opt/stack/nova/nova/network/os_vif_util.py:413}}
   May 05 14:13:02 os4 nova-compute[811]: DEBUG nova.network.os_vif_util [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Converted object VIFBridge(active=False,address=fa:16:3e:77:5f:94,bridge_name='qbr08268814-29',has_traffic_filtering=True,id=08268814-29e2-4719-b417-8832395e5e3e,network=Network(8356212e-f122-4dfc-9846-adecc23b4f34),plugin='ovs',port_profile=VIFPortProfileOpenVSwitch,preserve_on_delete=False,vif_name='tap08268814-29') {{(pid=811) nova_to_osvif_vif /opt/stack/nova/nova/network/os_vif_util.py:425}}
   May 05 14:13:02 os4 nova-compute[811]: DEBUG os_vif [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Plugging vif VIFBridge(active=False,address=fa:16:3e:77:5f:94,bridge_name='qbr08268814-29',has_traffic_filtering=True,id=08268814-29e2-4719-b417-8832395e5e3e,network=Network(8356212e-f122-4dfc-9846-adecc23b4f34),plugin='ovs',port_profile=VIFPortProfileOpenVSwitch,preserve_on_delete=False,vif_name='tap08268814-29') {{(pid=811) plug /usr/local/lib/python2.7/dist-packages/os_vif/__init__.py:79}}
   May 05 14:13:02 os4 nova-compute[811]: INFO os_vif [req-692d7939-4dca-4fc6-b8ff-95e68d752575 demo demo] Successfully plugged vif VIFBridge(active=False,address=fa:16:3e:77:5f:94,bridge_name='qbr08268814-29',has_traffic_filtering=True,id=08268814-29e2-4719-b417-8832395e5e3e,network=Network(8356212e-f122-4dfc-9846-adecc23b4f34),plugin='ovs',port_profile=VIFPortProfileOpenVSwitch,preserve_on_delete=False,vif_name='tap08268814-29')
+
+Plug event comes back from neutron, nova-compute libvirt driver unpauses the guest::
+
+  < trust me on this >
+
+
+  [nova-api] LOG.info(_LI('Creating event %(name)s:%(tag)s for '
+                          'instance %(instance_uuid)s'),
+
+  [nova-compute]  LOG.debug('Received event %(event)s',
+                            {'event': event.key},
+
+  [nova-compute]  LOG.debug('Processing event %(event)s',
+                            {'event': event.key}, instance=instance)
 
 nova-compute instance started::
 
